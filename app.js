@@ -1,6 +1,8 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
+const flash = require('connect-flash');
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
@@ -35,6 +37,14 @@ app.use(bodyParser.json());
 //Express method-override middleware
 app.use(methodOverride('_method'));
 
+// Express session midleware
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+
+app.use(flash());
 
 //Index Route
 app.get('/', (req, res) => {
@@ -72,11 +82,11 @@ app.get('/ideas/edit/:id', (req, res) => {
     Idea.findOne({
         _id: req.params.id
     })
-    .then(idea => {
-        res.render('ideas/edit', {
-        idea:idea
+        .then(idea => {
+            res.render('ideas/edit', {
+                idea: idea
+            });
         });
-    });
 });
 
 //Process Form
@@ -110,20 +120,29 @@ app.post('/ideas', (req, res) => {
 });
 
 //Update Form
-app.put('/ideas/:id', (req,res) =>{
+app.put('/ideas/:id', (req, res) => {
     Idea.findOne({
         _id: req.params.id
     })
-    .then(idea =>{
-        idea.title = req.body.title;
-        idea.details = req.body.details;
-
-        idea.save()
         .then(idea => {
-            res.redirect('/ideas');
+            idea.title = req.body.title;
+            idea.details = req.body.details;
+
+            idea.save()
+                .then(idea => {
+                    res.redirect('/ideas');
+                })
         })
-    })
-})
+});
+
+// Delete Idea
+app.delete('/ideas/:id', (req, res) => {
+    Idea.remove({ _id: req.params.id })
+        .then(() => {
+            res.redirect('/ideas');
+        });
+});
+
 
 
 app.listen(port, () => {
