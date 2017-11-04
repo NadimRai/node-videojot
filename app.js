@@ -11,6 +11,7 @@ const port = 5000;
 
 //Load Routes
 const ideas = require('./routes/ideas')
+const users = require('./routes/users');
 
 // Map global promise - get rid of warning
 mongoose.Promise = global.Promise;
@@ -22,9 +23,7 @@ mongoose.connect('mongodb://localhost/videojot-dev', {
     .then(() => console.log('MongoDB connected..'))
     .catch(err => console.log(err));
 
-// //load Idea Model
-// require('./models/Idea');
-// const Idea = mongoose.model('ideas');
+
 
 //Handlebars Middleware
 app.engine('handlebars', exphbs({
@@ -70,22 +69,10 @@ app.get('/about', (req, res) => {
     res.render('about');
 })
 
-
-
-
-
-//User Login Route
-app.get('/users/login', (req,res) =>{
-    res.send('login');
-})
-
-//User Register Route
-app.get('/users/register', (req,res) =>{
-    res.send('register');
-})
-
 //Use Routes
 app.use('/ideas', ideas);
+app.use('/users', users);
+
 
 app.listen(port, () => {
     console.log(`Server started on ${port}`);
