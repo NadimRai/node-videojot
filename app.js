@@ -1,3 +1,5 @@
+const path = require('path');
+
 const express = require('express');
 const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
@@ -35,6 +37,9 @@ app.set('view engine', 'handlebars');
 //Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
+
+//Static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Express method-override middleware
 app.use(methodOverride('_method'));
